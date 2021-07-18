@@ -1,0 +1,115 @@
+/*
+Given a string s, return the longest palindromic substring in s.
+*/
+
+//Algorithm: 
+Notice that if s[i:j] is palindromic and s[i-1] == s[j+1], then s[i-1:j+1] is also palindromic. Thas is the subproblem we want to solve.
+The top-level question is what is the first char in the longest palindromic? We will try all of the possible char. Let P(s,i) be the function to find any palindromic substring
+that starts at s[i]. Let M[1,...,n] be an array of linkedlist. Node j in M[i] indicates s[i:j+1] is palindromic. 
+Insert node i into M[i] because each char by it own is palindromic.
+
+P(s, i):  
+  // edge case 1: when i = n-1 there is only one char in the string
+  if (i == n-1) return;
+  // edge case 2: when s[i+1] = s[i] they form a palindromic substring:
+  if (s[i] == s[i+1]):
+    insert i+1 into M[i]
+  
+  //To compute P(s,i), we need to know all the palindromic substring starting at s[i+1] first.
+  P(s, i+1);
+  Linkedlist L = M[i+1];
+  for (node j: in L):
+    // if the ending char of the substring is the last char in string, there is no way s[i] can be the starting char. 
+    if j == n-1:
+      continue;
+    if s[j+1] == s[i]:
+      // reaching here means s[i: j+2] is palindromic
+      insert j+1 into M[i]
+      
+  // edge case when i = n-2 there is only one other possibility
+  if (i == n-2)
+
+////////////////////////
+//bottom-up solution. Starting from the right-most char
+
+longestPalindrome(String s) {
+        int n = s.length();
+        if (n == 1){return s;}
+        
+        // initialize the table
+        LinkedList<Integer>[] M = new LinkedList[n];
+        for (int i = 0; i < n; i++){
+            M[i] = new LinkedList<Integer>();
+            M[i].add(i);
+        }
+        
+        // starting from the second last char because we are done with the last char.
+        for (int i = n-2; i>= 0; i--){
+            // edge case when s[i+1] == s[i].
+            if (s.charAt(i) == s.charAt(i+1)){
+                M[i].add(i+1);
+            }
+            LinkedList<Integer> pIndex = M[i+1];
+            for (int j = 0; j < pIndex.size(); j++){
+                int index = pIndex.get(j);
+                if (index == n-1){
+                    continue; 
+                }
+                else if(s.charAt(i) == s.charAt(index+1)){
+                    M[i].add(index+1);
+                }
+            }
+        }
+        
+        // after completing table, we have to check for the longest substring
+        int max = 0;
+        int start = 0;
+        int end = 0;
+        for (int i = 0; i < n; i++){
+            int endIndex = M[i].peekLast();
+            if (endIndex - i > max){
+                max = endIndex - i;
+                start = i;
+                end = endIndex;          
+            }
+        }
+        return s.substring(start, end+1);
+    }
+    
+ /////////////////////
+ // approach 3 expand from center
+ //ALgorithm:
+ Try all the possible centers. There are 2n -1 center options because the center could be inbetween two chars such as "aa".
+ 
+ P(s){
+  if (s.length() <= 1 || s == null){return s;}
+  int max = 0;
+  int start = 0;
+  int end = 0;
+  // try all possible centers
+  for (int i = 0; i < s.length(), i++){
+    int len1 = expandAroundCenter(s, i, i);
+    int len2 = expandAroundCenter(s, i, i + 1);
+    int len = Math.max(len1, len2);
+    if (len > end - start) {
+        start = i - (len - 1) / 2;
+        end = i + len / 2;
+    }  
+  }
+ 
+ }
+ 
+ int expandAroundCenter(String s, int left, int right) {
+    int length = 0;
+    while (left >= 0 && right <s.length() && s.charAt(left) == s.charAt(right)){
+    left--;
+    right++
+    length += 2;
+    }
+    return length;
+ }
+
+
+
+//Run time:
+There are n subproblems. For subproblem i, there could be at most n -i nodes to traverse. So the total run time is 1+2+3+...+n-1 = O(n^2).
