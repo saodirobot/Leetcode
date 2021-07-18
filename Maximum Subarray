@@ -3,3 +3,14 @@ Given an integer array nums, find the contiguous subarray (containing at least o
 */
 
 // Algorithm:
+Suppose F(nums, i) is the function to compute the maximum sum that ends at nums[i]. Initialize an talbe M[1,...,n].
+F(nums, i):
+  if M[i] != null: return M[i]
+  f= max {0, nums[i], F(nums,i-1)+nums[i]}
+  M[i] =f 
+  return f
+  
+The largest sum must be the maximum in M because the subarray must ends at some element.
+
+//Run time analysis:
+There are n sub-problems. It takes O(1) to solve each of them. And it takes O(n) to pick the largest element in M.
