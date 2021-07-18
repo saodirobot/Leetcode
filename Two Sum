@@ -1,0 +1,16 @@
+/*
+Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+You can return the answer in any order.
+*/
+
+
+// Algorithm:
+
+F(nums, target)
+sort array nums
+for i in range (0, n):
+  binary search (target - nums[i]) in nums[i+1: n]
+  
+// Run time analysis:
+Sorting takes O(nlg n)time. There are at most n iterations to scan through the array. Each iterations takes O(lg n) at most. Hence the total runtime is O(n lg n).
