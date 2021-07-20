@@ -1,2 +1,2 @@
 # Leetcode
-To keep track of leetcode solving process.
+To keep track of leetcode solving process. Personal note.
