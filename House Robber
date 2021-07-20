@@ -1,0 +1,42 @@
+/*
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, 
+the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will 
+automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+*/
+
+// ALgorithm:
+Top-level question, what is the firtst house to rob. Same idea: try them all and memoize the answer. Initialize M[0,...,n-1] with null. M[i] will indicate the
+maximum amoount of the money you can rob from A[i: n] houses. Let rob(A, i) denote the function:
+
+ rob(A, 0) = max {A[0]+rob(A,2); A[1]+rob(A,3);A[2]+rob(A,3);...A[n-2]+rob(A,n-1); A[n-1]}
+ 
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0){return 0;}
+        int n = nums.length;
+        int[] subAmount = new int[n];
+        //initialize the table to be -1
+        for (int i = 0; i < n; i++){subAmount[i] = -1;}
+        
+        return robHelper(nums, subAmount, 0);
+    }
+    
+    private int robHelper(int[] nums,int[] subAmount, int index){
+        int n = nums.length;
+        if(index>=n){return 0;}
+        // check if we have computed the answer before
+        if (subAmount[index] != -1){return subAmount[index];}
+        
+        int max = 0;
+        for (int i = index; i < n; i++){
+            int amount =nums[i] + robHelper(nums, subAmount, i+2);
+            if (amount > max){
+                max = amount;
+            }
+        }
+        subAmount[index] = max;
+        return max;
+    }
+    
+//runtime: there are n entries to fill in the table. To fill entry i, it requires O(n-i) operations. Hence the total running time is 1+2+3+..+n = O(n^2)
