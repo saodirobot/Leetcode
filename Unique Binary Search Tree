@@ -1,0 +1,95 @@
+/*
+Given an integer n, return the number of structurally unique BST's (binary search trees) which has exactly n nodes of unique values from 1 to n.
+Input: n = 3
+Output: 5
+*/
+
+Algorithm: top-level question, what is the root? Try all possible root number. Memoize subproblem.
+F(n):
+  if n <= 1: return 1;
+  count = 0;
+  for i in range (1, n+1):
+    count += F(i-1) x F(n-i)
+    
+class Solution {
+    public int numTrees(int n) {
+        int[] table = new int[n+1];
+        table[0] = 1;
+        table[1] = 1;
+        return numSub(n, table);
+    }
+    
+    private int numSub(int n, int[] table){
+        if (table[n] != 0) return table[n];
+        int count = 0;
+        for (int i = 1; i < n+1; i ++){
+            count += numSub(i-1, table)*numSub(n-i, table);
+        }
+        return table[n] = count;
+    }
+}
+
+Run time: there are n subproblem. Each subproblem takes O(1) time. Overall run time is O(n)
+
+/*
+Same idea applies to II:
+Given an integer n, return all the structurally unique BST's (binary search trees), which has exactly n nodes of unique values from 1 to n. Return the answer in any order.
+*/
+
+Algorithm: now we have to keep a n^2 table. Each entry(i, j) keeps a list of trees i to j.
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public List<TreeNode> generateTrees(int n) {
+        HashMap<int[], ArrayList<TreeNode>> table = new HashMap<int[], ArrayList<TreeNode>>();
+        return subTree(1, n, table);
+    }
+    
+    private List<TreeNode> subTree(int start, int end, HashMap<int[], ArrayList<TreeNode>> table){
+        int[] range = {start, end};
+        if (table.containsKey(range)) {return table.get(range);}
+        
+        ArrayList<TreeNode> myList = new ArrayList<TreeNode>(); 
+        if (end == start) {
+            myList.add(new TreeNode(start, null, null));
+            table.put(range, myList);
+            return myList;
+        }
+            
+        if (end < start) {
+            myList.add(null);
+            table.put(range, myList);
+            return myList;
+        }
+        
+        for (int i = start; i <= end; i++){
+            List<TreeNode> leftSubTree = subTree(start, i-1, table);
+            List<TreeNode> rightSubTree = subTree(i+1, end, table);
+            for (int j = 0; j < leftSubTree.size(); j++){
+                for (int k = 0; k < rightSubTree.size(); k++){
+                //initialize the root node here.
+                     TreeNode root_i = new TreeNode(i, null, null);
+                     root_i.left = leftSubTree.get(j);
+                     root_i.right = rightSubTree.get(k);
+                     myList.add(root_i);  
+                }
+            }
+        } 
+        
+        table.put(range, myList);
+        return myList;
+    }
+}
