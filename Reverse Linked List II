@@ -1,0 +1,62 @@
+/*Given the head of a singly linked list and two integers left and right where left <= right, 
+*reverse the nodes of the list from position left to position right, and return the reversed list.
+*/
+
+Algorithm:
+
+Similarly as previous problem. Firstly we have to traverse the list to the position to start. Then we create a reversed sublist and insert it into the original list. 
+So we have to keep track of the breakpoint.
+
+Code:
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        
+        if (head == null || head.next == null || left == right) return head;
+        
+        ListNode curr = head;
+        int count = 1;
+        ListNode breakPoint = null;
+        // get to the location first
+        while ( count < left){
+            breakPoint = curr;
+            curr = curr.next;
+            count++;
+        }
+        
+ 
+
+        ListNode pre = new ListNode(curr.val);
+        ListNode subTail = pre;
+        curr = curr.next;
+        while (count < right){
+            ListNode newNode = new ListNode(curr.val);
+            newNode.next = pre;
+            pre = newNode;
+            curr = curr.next;
+            count++;
+        }
+        subTail.next = curr;
+        
+        if (breakPoint == null){
+            return pre;
+        }
+        breakPoint.next = pre;
+        
+        return head;
+        
+        
+    }
+}
+
+Runtime:
+Traversing the list at once. So O(n)
