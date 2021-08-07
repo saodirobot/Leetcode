@@ -1,0 +1,59 @@
+/*Given head, the head of a linked list, determine if the linked list has a cycle in it.
+*
+*There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer. 
+*Internally, pos is used to denote the index of the node that tail's next pointer is connected to. Note that pos is not passed as a parameter.
+*
+*Return true if there is a cycle in the linked list. Otherwise, return false.
+*/
+
+Algorithm:
+
+An interesting idea is introduced here. Imaging two people running together, A is faster than B. Giving them enough time, eventually A will catch up with B in they are running
+on a circular track. So we initialize two node to traver the list, one takes two steps each iteration. The other one takes only one step.
+
+
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        if (head == null) return false;
+        ListNode fast = head;
+        ListNode slow = head;
+        while (true){
+            fast = fast.next;
+            if (fast == slow){
+                return true;
+            } 
+            if (fast == null){
+                return false;
+            }
+            fast = fast.next;
+            if (fast == null){
+                return false;
+            }
+            if (fast == slow){
+                return true;
+            }
+            slow = slow.next;
+        }
+
+    }
+}
+
+Proof of correctness:
+Case 1: if there is no cycle then fast will reach null at some point and return false.
+Case 2: if there is a cycle of size n, without loss of generality, denote the node when slow enters the cycle by n_i. Suppose at this point, fast is at n_j. The index difference
+between them is 0< j-i < n-1. We want to show at j-i will become 0 at some point of while loop. During each iteration, we have i' = i+1, j' = j + 2, j' - i' =j-i+1. Hence
+after one iteration, the difference will increment by 1. At most n-2 iterations, the difference will reduce to 0.
+
+Run time:
+O(n)
