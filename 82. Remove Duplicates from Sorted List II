@@ -1,1 +1,68 @@
+/*
+*Given the head of a sorted linked list, delete all nodes that have duplicate numbers,
+*leaving only distinct numbers from the original list. Return the linked list sorted as well.
+*
+*Input: head = [1,2,3,3,4,4,5]
+*Output: [1,2,5]
+*/
 
+Algorithm:
+Similar to 83, but think about what happens if duplicates are at the beginning, middle and end.
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) return head;
+        
+        ListNode ahead = head.next;
+        ListNode mid = head;
+        ListNode behind = null;
+        while (ahead!=null){
+            
+            if (ahead.val == mid.val){
+                
+                // loop till no more duplicates
+                // e.g. 1->2->2->2->2->3
+                while ( ahead != null && ahead.val == mid.val){
+                    mid.next = ahead.next;
+                    ahead = ahead.next;
+                }
+                // getting out of the while loop means there is no duplicates.
+                // e.g. 1->2->3
+                // but we have to delete the source of duplicates.
+                if (behind == null){
+                    // reaching here means duplicates happen at the beginning
+                    head = ahead;
+                } else{
+                    // delete source of duplicate
+                    // e.g. 1->3
+                    behind.next = ahead;  
+                }
+                
+                if (ahead == null) {
+                    // reaching here means we are done traversing the list
+                    return head;
+                }
+                // otherwise move the frame forward and keep checking
+                mid = ahead;
+                ahead = ahead.next;
+            }else{
+                
+                behind = mid;
+                mid = ahead;
+                ahead= ahead.next;
+            }
+        }
+        return head;
+        
+    }
+}
