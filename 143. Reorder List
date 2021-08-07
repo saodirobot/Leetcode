@@ -1,0 +1,82 @@
+/*
+*You are given the head of a singly linked-list. The list can be represented as:
+*
+*L0 → L1 → … → Ln - 1 → Ln
+*Reorder the list to be on the following form:
+*
+*L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+*/
+
+Algorithm:
+
+Because we want to insert node in back order, naturally I want to use stack. First traverse the list and store all the nodes in stack. Then insert them back to the list.
+But be caution on the last node! we will create cycle if not deal with it.
+Also there is a neat way to find the middle node in a list:
+
+//Find the middle of the list
+            ListNode p1=head;
+            ListNode p2=head;
+            while(p2.next!=null&&p2.next.next!=null){ 
+                p1=p1.next;
+                p2=p2.next.next;
+            }
+    
+Code:
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    
+    public void reorderList(ListNode head) {
+        
+        if (head == null || head.next == null) return;
+        
+        
+        Stack<ListNode> myStack = new Stack<ListNode>();
+        
+        ListNode curr = head;
+        int len = 0;
+        while (curr != null){
+            myStack.push(curr);
+            curr = curr.next;
+            len ++;
+        }
+        
+        curr = head;
+        ListNode popNode;
+        
+        for (int i = 1; i <= len/2 - 1 ; i++){
+            popNode = myStack.pop();
+            // caution! possible to create a cycle for case like 1->2->3->4
+            popNode.next = curr.next;
+            curr.next = popNode;
+            curr = popNode.next;
+        }
+        
+        // we have to treat the last node specially otherwise we may create cycle.
+        popNode = myStack.pop();
+        if (len % 2 == 0) {
+            curr.next = popNode;
+            popNode.next = null;
+        }else {
+            popNode.next = curr.next;
+            curr.next = popNode;
+            popNode.next.next = null;
+        }
+        
+        
+    }
+}
+
+
+
+Run time:
+O(2n)
