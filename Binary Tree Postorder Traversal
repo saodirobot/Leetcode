@@ -1,0 +1,122 @@
+/*
+*Given the root of a binary tree, return the postorder traversal of its nodes' values.
+*/
+A little background info here:
+For a binary tree,
+     1
+   /   \ 
+  2     3
+ / \
+4   5
+
+(a) Inorder (Left, Root, Right) : 4 2 5 1 3 
+(b) Preorder (Root, Left, Right) : 1 2 4 5 3 
+(c) Postorder (Left, Right, Root) : 4 5 2 3 1
+
+Inorder Algorithm:
+1) Create Stack S. Set curr = S.
+2) While curr!= null: push curr to S. curr = S->left.
+3) if curr == null and S is not empty:
+  a) pop S, print it. 
+  b) curr = popped->right
+  c) go back to step 3
+  
+Preorder Algorithm:
+1) Create an empty stack nodeStack and push root node to stack. 
+2) Do the following while nodeStack is not empty. 
+  a) Pop an item from the stack and print it. 
+  b) Push right child of a popped item to stack 
+  c) Push left child of a popped item to stack
+
+Postorder Algorithm:
+1) Push root to first stack.
+2) Loop while first stack is not empty
+   a) Pop a node from first stack and push it to second stack
+   b) Push left and right children of the popped node to first stack
+3) Print contents of second stack
+
+Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+ 
+class Solution {
+    
+    public List<Integer> postorderTraversal(TreeNode root) {
+        
+        LinkedList<Integer> myList = new LinkedList<>();
+        // a stack to keep track of the nodes we visited
+        Deque<TreeNode> myStack = new ArrayDeque<TreeNode>();
+        // edge cases
+        if (root == null) return myList;
+        if (root.left == null && root.right == null){
+            myList.add(root.val);
+            return myList;
+        } 
+        
+        TreeNode curr = root;
+        myStack.push(root);
+
+        while (!myStack.isEmpty()){
+            curr = myStack.pop();
+            myList.addFirst(curr.val);
+            if (curr.left != null){
+                myStack.push(curr.left);
+            }
+            if (curr.right != null){
+                myStack.push(curr.right);
+            }
+        }
+        return myList;
+        
+    }
+    
+}
+
+Approach 2: Recurrsion
+Create a private method postorderSubtree, call postorderSubtree(left) and postorderSubtree(right) and postorderSubtree(root). 
+Code:
+
+
+class Solution {
+    
+    public List<Integer> postorderTraversal(TreeNode root) {
+        
+        return postorderSubtree(root);
+    }
+    
+    private List<Integer> postorderSubtree (TreeNode root){
+        
+        ArrayList<Integer> myList = new ArrayList<>();
+        if (root == null) return myList;
+        if (root.left == null && root.right == null){
+            myList.add(root.val);
+            return myList;
+        } 
+        
+        myList.addAll(postorderSubtree(root.left));
+        myList.addAll(postorderSubtree(root.right));
+        myList.add(root.val);
+        return myList;
+    }
+}
+
+Run time:
+Visits each node exactly once, hence the run time is O(n).
+
+Approach 2: Iteration
+
+
