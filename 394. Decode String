@@ -1,0 +1,68 @@
+/*
+*Given an encoded string, return its decoded string.
+*
+*The encoding rule is: k[encoded_string], where the encoded_string inside the 
+*square brackets is being repeated exactly k times. Note that k is guaranteed to be a positive integer.
+*
+*You may assume that the input string is always valid; No extra white spaces, square brackets are well-formed, etc.
+*
+*Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, k.
+*For example, there won't be input like 3a or 2[4].
+*/
+
+Algorithm:
+Just like the valid bracket problem, when encountering with this type of problem, the first thought is usually to use STACK because of the LIFO property.
+Here we have to keep two stacks. One to keep track of the number, i.e the times to repeate. The other keeps the real string to repeat. 
+1) Initialize a temp string ts.
+2) Enumerate the string.
+3) When encountering a letter, we will append the letter to ts
+4) When encountering a number, we will read till the end of the number and push to the stack1
+5) When encountering  a '[', that means whatever ts is, the content after '[' will have to be appended to ts for certain times. 
+  So we push ts to stack2. This way the number in stack1 is associative with ts in stack2. And then we reset ts.
+6) When encountering  a ']', we have reached a complete substructure. We can append whatever ts is to the last element in stack1 for certain times. Then we set ts to the result
+  Because now we can treat everytihng inside as one regular string. For example, a2[b2[c]] = a2[bcc], we set ts = bcc.
+  
+Code:
+
+class Solution {
+    public String decodeString(String s) {
+        int len = s.length();
+        if (len < 4) {return s;}
+        Stack<String> repeatedString = new Stack<String>();
+        Stack<Integer> repeatedTimes = new Stack<Integer>();
+
+        int i = 0;
+        String returnString = "";
+        while (i < len){
+            if (Character.isDigit(s.charAt(i))){
+                int startIndex = i;
+                while (Character.isDigit(s.charAt(i))){
+                    i++;
+                }
+                int count = Integer.parseInt(s.substring(startIndex, i)); 
+                repeatedTimes.push(count);
+            }
+            else if (Character.isLetter(s.charAt(i))){
+                returnString = returnString + s.charAt(i);
+                i++;
+            }
+            else if (s.charAt(i) == '['){
+                repeatedString.push(returnString);
+                returnString = "";
+                i++;
+            }
+            else if (s.charAt(i) == ']'){
+                String temp = repeatedString.pop();
+                int times = repeatedTimes.pop();
+                for (int j = 0; j < times; j++){
+                    temp = temp+returnString;
+                }
+                returnString = temp;
+                i++;
+            }
+        }
+        return returnString;
+    }
+}
+
+Runtime: O(n)
