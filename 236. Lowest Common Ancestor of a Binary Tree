@@ -1,0 +1,64 @@
+Description:
+Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.
+According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as
+the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).”
+
+Algorithm:
+1) Use BFS to find both nodes. 
+2) While traversing, keep track of parent node of each node
+3) Create a set of ancestors, check the LCA.
+
+Code:
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        
+        if (root == null){return null;}
+        
+        Deque<TreeNode> myStack = new ArrayDeque<TreeNode>();
+        Map<TreeNode, TreeNode> parent = new HashMap<>();
+        
+        parent.put(root, null);
+        myStack.push(root);
+        
+        
+        while (!parent.containsKey(p)|| !parent.containsKey(q)){
+            
+            TreeNode node = myStack.pop();
+            
+            if(node.left != null){
+                parent.put(node.left, node);
+                myStack.push(node.left);
+            }
+            
+            if(node.right != null){
+                parent.put(node.right, node);
+                myStack.push(node.right);
+            }
+        
+        }
+        
+        Set<TreeNode> ancestors = new HashSet<>();
+        while (p != null){
+            ancestors.add(p);
+            p = parent.get(p);
+        }
+        
+        while (!ancestors.contains(q)){
+            q = parent.get(q);
+        }
+        
+        return q;
+        
+    }
+}
+
+Run time: O(n)
