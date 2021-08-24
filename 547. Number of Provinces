@@ -1,0 +1,58 @@
+Description:
+There are n cities. Some of them are connected, while some are not. If city a is connected directly with city b, 
+and city b is connected directly with city c, then city a is connected indirectly with city c.
+
+A province is a group of directly or indirectly connected cities and no other cities outside of the group.
+
+You are given an n x n matrix isConnected where isConnected[i][j] = 1 if the ith city and the jth city are directly connected, 
+and isConnected[i][j] = 0 otherwise.
+
+Return the total number of provinces.
+
+Algorithm:
+This problem is essentially to find connected components with given matrix.
+
+Code:
+
+class Solution {
+    public int findCircleNum(int[][] isConnected) {
+        int len = isConnected.length;
+        Set<Integer> nodes = new HashSet<>();
+        for (int i = 0 ; i < len; i++){
+            // initialize a set of nodes.
+            nodes.add(i);
+        }
+        if (len == 1){ return 1;}
+        int count = 1;
+        bfs(isConnected, nodes, 0);
+        
+        while (!nodes.isEmpty()){
+            Iterator<Integer> iter = nodes.iterator();
+            bfs(isConnected, nodes, iter.next());
+            count++;
+        }
+        return count;
+    }
+    
+    // visit all the reachable nodes from given node. Delete it from the set if it's
+    // reachable.
+    private void bfs(int[][] isConnected, Set<Integer> nodes, Integer node){
+        Deque<Integer> myQue = new ArrayDeque<>();
+        int len = isConnected.length;
+        myQue.add(node);
+        nodes.remove(node);
+        while (!myQue.isEmpty()){
+            Integer city = myQue.poll();
+            for (int i = 0; i < len; i++){
+                if (i == city){continue;} 
+                if (isConnected[city][i] == 1 && nodes.contains(i)){
+                    // reaching here means city i and j are directly connected
+                    myQue.add(i);
+                    nodes.remove(i);
+                }
+            }
+        }
+    }
+}
+
+Run time: O(n^2) because we have to traverse the matrix.
