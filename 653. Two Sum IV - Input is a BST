@@ -1,0 +1,36 @@
+Description:
+Given the root of a Binary Search Tree and a target number k, return true if there exist two elements 
+in the BST such that their sum is equal to the given target.
+
+Algorithm:
+
+Because every number is unique, we can keep a set of numbers of interests while traversing the tree. 
+
+class Solution {
+    public boolean findTarget(TreeNode root, int k) {
+        if (root == null){return false;}
+        
+        Deque<TreeNode> myDeque = new ArrayDeque<>();
+        Set<Integer> numberWanted = new HashSet<>();
+
+        myDeque.add(root);
+        
+        while (!myDeque.isEmpty()){
+            TreeNode curr = myDeque.poll();
+            if (numberWanted.contains(curr.val)){
+                return true;
+            }
+            numberWanted.add(k - curr.val);
+            if (curr.left != null){
+                myDeque.add(curr.left);
+            }
+            if (curr.right != null){
+                myDeque.add(curr.right);
+            }
+        }
+        return false;
+    }
+    
+}
+
+O(n) run time.
