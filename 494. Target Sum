@@ -1,0 +1,49 @@
+Description:
+You are given an integer array nums and an integer target.
+
+You want to build an expression out of nums by adding one of the symbols '+' and '-' before each integer in nums and then concatenate all the integers.
+
+For example, if nums = [2, 1], you can add a '+' before 2 and a '-' before 1 and concatenate them to build the expression "+2-1".
+Return the number of different expressions that you can build, which evaluates to target.
+
+Algorithm:
+This problem falls into DP category because there are finite decision to make and a recursive relation. We guess all the possible signs. Denote the function by
+DP(int[] arr, int target). If the first sign is '+' we will call DP(int[1:n] arr, target - int[0]). If it is '-', we will call DP(int[1:n] arr, target + int[0]).
+The final answer should be the sum of these two return values.
+
+Code:
+class Solution {
+    public int findTargetSumWays(int[] nums, int target) {
+        HashMap<int[], Integer> table = new HashMap<>();
+        int[] first = {0, target};
+        return helper(nums, first, table);
+    }
+    
+    private int helper(int[] nums, int[] startTarget, HashMap<int[], Integer> table){
+        
+        if ( table.containsKey(startTarget)){
+            return table.get(startTarget);
+        }
+        int start = startTarget[0];
+        int target = startTarget[1];
+        if (start == nums.length-1){
+            int count = 0;
+            if (nums[start] == target){
+                count ++;
+            } 
+            if (-nums[start] == target){
+                count ++;
+            }
+            return count;
+        }
+        
+        int[] add = {start+1, target-nums[start]};
+        int[] minus = {start+1, target+nums[start]};
+        // if we choose to add
+        int a = helper(nums, add, table);
+        int b = helper(nums, minus, table);
+        table.put(startTarget, a+b);
+        
+        return a+b;
+    }
+}
