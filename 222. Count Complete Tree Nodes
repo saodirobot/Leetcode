@@ -6,3 +6,95 @@ and all nodes in the last level are as far left as possible. It can have between
 
 Design an algorithm that runs in less than O(n) time complexity.
 
+Algorithm:
+
+- native approach: traverse the tree with BFS. keep track of nodes. This approach does not utilize the complete tree property.
+
+code:
+
+class Solution {
+    public int countNodes(TreeNode root) {
+        if (root == null) return 0;
+        Deque<TreeNode> myQue = new ArrayDeque<>();
+        int count = 0;
+        myQue.add(root);
+        while (!myQue.isEmpty()){
+            TreeNode curr = myQue.poll();
+            count ++;
+            if (curr.left != null){
+                myQue.add(curr.left);
+            }
+            if (curr.right != null){
+                myQue.add(curr.right);
+            }
+        }
+        return count;
+    }
+}
+
+Run time: O(n)
+
+- Now, we can try to use the property of complete tree. First thought is to find the last level. So we keep two tracks: one keeps going left and the other
+one keeps going right. So that when we reach null, we know the left track is the last level and right track could be the same level or a level above.
+If it is the first case then thanks God we've found the answer. If it is the second case, we just need to find how many nodes are there in the last level.
+Now how can we find the last node? It could be anywhere in the last level. A very smart though that I saw, is to use binary search. So we check the mid point
+in the last level. If it's present, then the last node most be on the right side. Otherwise, it must be on the left. The runtime in this case is O(log n).
+There the second method can also be used to find the node with given index.
+
+Code:
+
+class Solution {
+  // Return tree depth in O(d) time.
+  public int computeDepth(TreeNode node) {
+    int d = 0;
+    while (node.left != null) {
+      node = node.left;
+      ++d;
+    }
+    return d;
+  }
+
+  // Last level nodes are enumerated from 0 to 2**d - 1 (left -> right).
+  // Return True if last level node idx exists. 
+  // Binary search with O(d) complexity.
+  public boolean exists(int idx, int d, TreeNode node) {
+    int left = 0, right = (int)Math.pow(2, d) - 1;
+    int pivot;
+    for(int i = 0; i < d; ++i) {
+      pivot = left + (right - left) / 2;
+      if (idx <= pivot) {
+        node = node.left;
+        right = pivot;
+      }
+      else {
+        node = node.right;
+        left = pivot + 1;
+      }
+    }
+    return node != null;
+  }
+
+  public int countNodes(TreeNode root) {
+    // if the tree is empty
+    if (root == null) return 0;
+
+    int d = computeDepth(root);
+    // if the tree contains 1 node
+    if (d == 0) return 1;
+
+    // Last level nodes are enumerated from 0 to 2**d - 1 (left -> right).
+    // Perform binary search to check how many nodes exist.
+    int left = 1, right = (int)Math.pow(2, d) - 1;
+    int pivot;
+    while (left <= right) {
+      pivot = left + (right - left) / 2;
+      if (exists(pivot, d, root)) left = pivot + 1;
+      else right = pivot - 1;
+    }
+
+    // The tree contains 2**d - 1 nodes on the first (d - 1) levels
+    // and left nodes on the last level.
+    return (int)Math.pow(2, d) - 1 + left;
+  }
+}
+
