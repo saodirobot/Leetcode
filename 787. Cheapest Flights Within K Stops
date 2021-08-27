@@ -1,0 +1,62 @@
+Description:
+There are n cities connected by some number of flights. You are given an array flights where flights[i] = [fromi, toi, pricei] 
+indicates that there is a flight from city fromi to city toi with cost pricei.
+
+You are also given three integers src, dst, and k, return the cheapest price from src to dst with at most k stops. 
+If there is no such route, return -1.
+
+Algorithm:
+Use dynamic programming. Top-level decision: which stop is the first stop to take? Try all the possibilities.
+
+Code:
+
+class Solution {
+    private int[][] adjMatrix;
+    private HashMap<Pair<Integer, Integer>, Integer> memo;
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        this.memo = new HashMap<Pair<Integer, Integer>, Integer>();
+        this.adjMatrix = new int[n][n];
+        for (int i = 0; i < flights.length; i ++){
+            this.adjMatrix[flights[i][0]][flights[i][1]] = flights[i][2];
+        }
+        
+        int ans = this.findShortest(src, k, dst, n);
+        return ans >= Integer.MAX_VALUE ? -1 : ans;
+    }
+    
+    public int findShortest(int node, int stops, int dst, int n){
+        if (node == dst) return 0;
+        
+        if (stops < 0){
+            return Integer.MAX_VALUE;
+        }
+        
+        Pair<Integer, Integer> key = new Pair<Integer, Integer>(node, stops);
+        
+        if (this.memo.containsKey(key)){
+            return this.memo.get(key);
+        }
+        
+        int ans = Integer.MAX_VALUE;
+        for (int neighbor = 0; neighbor < n; neighbor ++){
+            int weight = this.adjMatrix[node][neighbor];
+            if (weight > 0){
+                int path = this.findShortest(neighbor, stops-1, dst, n); 
+                if (path == Integer.MAX_VALUE){
+                    continue;
+                }else{
+                    ans = Math.min(ans, path+weight);
+                }
+                
+            }
+        }
+        this.memo.put(key, ans);
+        return ans;
+        
+    }
+    
+    
+}
+
+Run time:
+ O(nxK).
