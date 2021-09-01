@@ -1,0 +1,40 @@
+Description:
+
+Given an array of integers nums and an integer k, return the total number of continuous subarrays whose sum equals to k.
+Example:
+Input: nums = [1,1,1], k = 2
+Output: 2
+
+Algorithm:
+my first thought is to check if there is any duplicated subproblem so that we can use DP. However, it seems like very subproblem is unique.
+So I try to use brute force. Because elements could be positive or negative. We have to enumerate till the end of array.
+
+Code:
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int len = nums.length;
+        if (len == 1){
+            if (nums[0] == k){
+                return 1;
+            }else{
+                return 0;
+            }
+        }
+        
+        int count = 0;
+        for (int i = 0; i < len; i ++){
+            int sum = nums[i];
+            if (nums[i] == k){count ++;}
+            for (int j = i+1; j < len; j++){
+                sum += nums[j];
+                if (sum == k){
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
+}
+
+Runtime: O(n)
