@@ -1,0 +1,56 @@
+Description:
+
+You are given an integer array nums of length n where nums is a permutation of the numbers in the range [0, n - 1].
+
+You should build a set s[k] = {nums[k], nums[nums[k]], nums[nums[nums[k]]], ... } subjected to the following rule:
+
+The first element in s[k] starts with the selection of the element nums[k] of index = k.
+The next element in s[k] should be nums[nums[k]], and then nums[nums[nums[k]]], and so on.
+We stop adding right before a duplicate element occurs in s[k].
+Return the longest length of a set s[k].
+Example1:
+Input: nums = [5,4,0,3,1,6,2]
+Output: 4
+Explanation: 
+nums[0] = 5, nums[1] = 4, nums[2] = 0, nums[3] = 3, nums[4] = 1, nums[5] = 6, nums[6] = 2.
+One of the longest sets s[k]:
+s[0] = {nums[0], nums[5], nums[6], nums[2]} = {5, 6, 2, 0}
+
+Algorithm:
+We can imagine this array as a graph. Each element is a node. If nums[i] = k then there is an edge between i and k. This way the array becomes a graph with
+multiple cycles. Imagine we run DFS on one node, it will discover all the nodes it can reach. For example, if we run DFS[5], we will discover the cycle:
+5->6->2->0->5. And since every node only has one edge, we dont have to compute these nodes any more. i.e., we dont need to run DFS on 6 or 2 or 0 again.
+So we can keep a set of seen nodes, only compute those nodes that we haven't seen before.
+
+Code:
+class Solution {
+    
+    private int[] myMap;
+    
+    public int arrayNesting(int[] nums) {
+        if (nums.length == 1){return 1;}
+        int len = nums.length; 
+        Set<Integer> seen = new HashSet<>();
+        int max = 0;
+        int i = 0;
+        while (seen.size() != len){
+            if (seen.contains(nums[i])){
+                i++;
+                continue;
+            }
+            int count = 0;
+            int curr = nums[i];
+            while (seen.add(curr)){
+                count++;
+                curr = nums[curr];
+            }
+            if (count > max){
+                max = count;
+            }
+            i++;
+        }
+        return max;
+    }
+}
+
+Runtime: every element will be visited exactly once, run time is O(n).
