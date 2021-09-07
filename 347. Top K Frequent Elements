@@ -1,0 +1,48 @@
+Description:
+
+Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order.
+
+Algorithm:
+
+Very intuitive idea. Enumerate the array for first time to compute frequency for each element. Store the information in a hashmap. Then enumerate the 
+hashmap, and add each entry to a treemap, so that we can have them in order. 
+
+Code:
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        
+
+        int len = nums.length;
+        TreeMap<Integer, ArrayList<Integer>> map = new TreeMap<>();
+        HashMap<Integer, Integer> fre = new HashMap<>();
+        for (int num: nums){
+            fre.put(num, fre.getOrDefault(num,0)+1);
+        }
+        
+        for (int num: fre.keySet()){
+            int frequency = fre.get(num);
+            if (map.containsKey(frequency)){
+                map.get(frequency).add(num);
+            }else{
+                ArrayList<Integer> list = new ArrayList<>();
+                list.add(num);
+                map.put(frequency, list);
+            }
+        }
+        
+        int count = 0;
+        int[] ans = new int[k];
+        while (count < k){
+            List<Integer> mylist = map.pollLastEntry().getValue();
+            
+            for (int n: mylist){
+                ans[count] = n;
+                count++;
+            }
+        }
+        
+        return ans;
+    }
+}
+
+Run time: O(n)
