@@ -1,0 +1,49 @@
+Description:
+You are given an integer array nums. You want to maximize the number of points you get by performing the following operation any number of times:
+
+Pick any nums[i] and delete it to earn nums[i] points. Afterwards, you must delete every element equal to nums[i] - 1 and every element equal to nums[i] + 1.
+Return the maximum number of points you can earn by applying the above operation some number of times.
+
+Algorithm:
+
+Since all elements are positive integer, and there could duplicates, I want to create a hashmap that stores the real points we get for picking such number.
+For example, [3, 3, 3, 4, 4] -> {(3:9), (4: 8)}. Because pick 3 really means we get 9 points. Secondly, I want to sort the array, so that we only need to consider
+the last two elements we are examinating. We enumerate the sorted array, and keep two version of maxValue, one includes the last number, the other does not.
+
+Code:
+class Solution {
+    
+    public int deleteAndEarn(int[] nums) {
+        HashMap<Integer, Integer> value = new HashMap<>();
+        TreeSet<Integer> sortArray =  new TreeSet<>();
+        for (int num: nums){
+            sortArray.add(num);
+            value.put(num, value.getOrDefault(num,0)+num);
+        }
+        
+        int maxWithLast = 0;
+        int maxWoLast = 0;
+        int last = -2;
+        int maxSoFar = 0;
+
+
+        while (!sortArray.isEmpty()){
+            maxSoFar = Math.max(maxWithLast, maxWoLast);
+            int curr = sortArray.pollFirst();
+            if (curr == last+1){
+                maxWithLast = maxWoLast + value.get(curr);
+            }else{
+                maxWithLast = maxSoFar+ value.get(curr);
+            }
+            maxWoLast = maxSoFar;
+            last = curr;
+        }
+        
+        
+        return Math.max(maxWithLast, maxWoLast);
+        
+    }
+    
+}
+
+Runtime: O(nlogn) for sorting.
