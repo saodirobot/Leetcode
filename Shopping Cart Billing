@@ -1,0 +1,70 @@
+Description:
+An e-commerce company is currently celebrating ten years in business. They are having a sale to honor their privileged members, those who have been using their services for the past five years. They receive the best discounts indicated by any discount tags attached to the product. Determine the minimum cost to purchase all products listed. As each potential price is calculated, round it to the nearest integer before adding it to the total. Return the cost to purchase all items as an integer.
+There are three types of discount tags:
+• Type O: discounted price, the item is sold for a given price.
+• Type 1: percentage discount, the customer is given a fixed percentage discount from the retail price.
+• Type 2: fixed discount, the customer is given a fixed amount off from the retail price.
+
+Example:
+products = [['10', 'do', 'd1'], ['15', 'EMPTY', 'EMPTY'], ['20', 'd1', 'EMPTY"]]
+discounts = [['d0','1','27'], ['d1', '2', '5']]
+The products array elements are in the form ['price', 'tag 1', 'tag 2', ..., 'tag m-1'). There may be zero or more discount codes associated with a product. Discount tags in the products array may be 'EMPTY' which is the same as a null value.
+The discounts array elements are in the form ['tag, 'type', 'amount').
+
+If a privileged member buys product 1 listed at a price of 10 with two discounts available:
+Under discount do of type 1, the discounted price is 10 - 10 * 0.27 = 7.30, round to 7.
+Under discount d1 of type 2, the discounted price is 10-5 = 5. The price to purchase the product 1 is the lowest of the two, or 5 in this case
+The second product is priced at 15 because there are no discounts available
+The third product is priced at 20. Using discount tag d1 of type 2, the discounted price is 20-5= 15 The total price to purchase the three items is 5+ 15 +15 = 35.
+
+Algorithm: Straightforward
+
+Code:
+
+	public static int FindLowestPrice(List<List<String>> products, List<List<String>> discounts) {
+		
+		int lenDisc = discounts.size();
+		HashMap<String,  int[]> discountMap = new HashMap<>();
+		for (int i = 0; i < lenDisc; i ++) {
+			List<String> eachDiscount= discounts.get(i);
+			String k = eachDiscount.get(0);
+			int[] nums = new int[2];
+			nums[0] = Integer.parseInt(eachDiscount.get(1));
+			nums[1] = Integer.parseInt(eachDiscount.get(2));
+			discountMap.put(k, nums);
+		}
+		
+		int sum = 0;
+		int len = products.size();
+		for (int i = 0; i < len; i ++) {
+			List<String> eachProduct = products.get(i);
+			int price = Integer.parseInt(eachProduct.get(0));
+			int len3 = eachProduct.size();
+			int minPrice = price;
+			for (int j = 1; j < len3; j++) {
+				String tag = eachProduct.get(j);
+				if (tag == "EMPTY") {
+					break;
+				}else {
+					int[] discountsList = discountMap.get(tag);
+					int priceAfterward = getPrice(discountsList, price);
+					if (priceAfterward < minPrice) minPrice = priceAfterward;
+				}
+			}
+			sum += minPrice;
+		}
+		
+		return sum;
+	}
+	
+	private static int getPrice(int[] nums, int price) {
+		if (nums[0] == 0) {
+			return Math.round(nums[1]);
+		}else if (nums[0] == 1) {
+			
+			return (int)Math.round(price - (price*nums[1])*0.01);
+		}else {
+			return Math.round(price - nums[1]);
+		}
+		
+	}
