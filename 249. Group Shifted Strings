@@ -1,0 +1,50 @@
+Description:
+We can shift a string by shifting each of its letters to its successive letter.
+
+For example, "abc" can be shifted to be "bcd".
+We can keep shifting the string to form a sequence.
+
+For example, we can keep shifting "abc" to form the sequence: "abc" -> "bcd" -> ... -> "xyz".
+Given an array of strings strings, group all strings[i] that belong to the same shifting sequence. You may return the answer in any order.
+
+Algorithm:
+my idea is to compute the difference between two chars so that each string will have its own key.
+For example: abc = 1,1 bcd = 1, 1
+But since there is possibility of negative az = 25, ba = -1; i convert every number < 0 to num +25;
+
+code:
+class Solution {
+    public List<List<String>> groupStrings(String[] strings) {
+        HashMap<Integer, List<String>> patternKey = new HashMap();
+        
+        for (String s: strings){
+            if (s.length() == 1) {
+                if (patternKey.containsKey(-1)){
+                    patternKey.get(-1).add(s);
+                }else{
+                    List<String> values = new ArrayList<>();
+                    values.add(s);
+                    patternKey.put(-1, values);
+                }
+            }else{
+                int key = 1;
+                for (int i =  1; i < s.length(); i ++){
+                    int diff = s.charAt(i) - s.charAt(i-1);
+                    if (diff < 0) diff += 26;
+                    key = (key*100) + diff;
+                }
+                if (patternKey.containsKey(key)){
+                    patternKey.get(key).add(s);
+                }else{
+                    List<String> values = new ArrayList<>();
+                    values.add(s);
+                    patternKey.put(key, values);
+                }
+            }
+        }
+        
+        List<List<String>> ans = new ArrayList<>(patternKey.values());
+        return ans;
+    }
+}
+
