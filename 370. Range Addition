@@ -1,0 +1,26 @@
+Description:
+You are given an integer length and an array updates where updates[i] = [startIdxi, endIdxi, inci].
+
+You have an array arr of length length with all zeros, and you have some operation to apply on arr. 
+In the ith operation, you should increment all the elements arr[startIdxi], arr[startIdxi + 1], ..., arr[endIdxi] by inci.
+
+Return arr after applying all the updates.
+
+Algorithm:
+keep track of operations. Compute final result after all operations are enumerated.
+Code:
+class Solution {
+    public int countBinarySubstrings(String s) {
+        int sum = 0, prev = 0, curr = 1;
+        for (int i = 1; i < s.length(); i ++){
+            if (s.charAt(i) != s.charAt(i-1)){
+                sum += Math.min(prev, curr);
+                prev = curr;
+                curr = 1;
+            }else{
+                curr ++;
+            }
+        }
+        return sum+= Math.min(prev,curr);
+    }
+}
